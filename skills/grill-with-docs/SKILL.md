@@ -1,6 +1,6 @@
 ---
 name: grill-with-docs
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.
+description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates CONTEXT.md and ADRs inline as decisions crystallise. Prefer over /grill-me whenever a codebase exists — including brand new projects where CONTEXT.md doesn't exist yet (the skill creates it). Use when user wants to stress-test a design, establish shared vocabulary, or mentions "grill with docs".
 ---
 
 <what-to-do>
