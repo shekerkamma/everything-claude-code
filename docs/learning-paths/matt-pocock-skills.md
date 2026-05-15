@@ -1,42 +1,119 @@
 # Learning Path: Matt Pocock Skills
 
-A progressive learning path for the 15 skills integrated from [shekerkamma/skills](https://github.com/shekerkamma/skills), ordered by the workflow shown in [Matt Pocock's walkthrough video](https://www.youtube.com/watch?v=M-8lv5TXUYkr).
+A progressive learning path for the 15 skills integrated from [shekerkamma/skills](https://github.com/shekerkamma/skills), built from two walkthrough videos:
+- [Video 1](https://www.youtube.com/watch?v=M-8lv5TXUYkr) — the core 5-skill loop
+- [Video 2](https://www.youtube.com/watch?v=6BB6exR8Zd8) — why `/grill-with-docs` replaced `/grill-me`, and how `CONTEXT.md` works
 
 > **Who this is for**: Engineers who build with AI daily and want a systematic workflow — not vibe coding, not a decade of CS theory. The skills chain together into a repeatable loop for designing, refining, and implementing features.
 
 ---
 
-## The Core Loop (start here)
+## The Most Important Concept: Ubiquitous Language
 
-The video demonstrates a 5-skill loop that covers the full arc of an AI-assisted feature cycle. Learn these five first.
+Before the skills, understand the foundational idea they're built on.
+
+**Ubiquitous language** (from Eric Evans' *Domain-Driven Design*) means: the code, the developers, and the domain experts all use *exactly the same words* to describe the same things. When that alignment exists, you stop wasting tokens re-explaining what "standalone video" or "pitch" means every session. The AI picks up context from your `CONTEXT.md` automatically.
+
+Without it: every session starts with 10 minutes of re-explaining non-obvious terms.  
+With it: the AI already knows, and uses fewer tokens both responding *and thinking* internally.
+
+### What `CONTEXT.md` looks like
+
+```md
+# My App
+
+A tool for managing video content and pitches.
+
+## Language
+
+**Pitch**: The packaging for a video — title, description, and framing.
+Created before the video itself. _Avoid_: idea, concept, proposal.
+
+**Standalone video**: A video with lesson_id = null (not connected to a course).
+_Avoid_: solo video, independent video.
+
+## Relationships
+
+- A **Pitch** corresponds to one or more **Standalone videos**
+- A **Standalone video** may be unpitched (pitch_id = null)
+```
+
+This file compounds in value over sessions. By session 4 or 5, the AI starts completing your thoughts using your exact vocabulary before the words come out.
+
+### What ADRs look like
+
+`docs/adr/0001-on-delete-restrict.md`:
+```md
+# Restrict cascade on pitch deletion
+
+Pitches use ON DELETE RESTRICT rather than CASCADE. Deleting a pitched
+standalone video is almost always a mistake; archiving is preferred.
+We chose RESTRICT so deletions require an explicit unlink first.
+```
+
+Only create an ADR when the decision is: (1) hard to reverse, (2) surprising without context, and (3) a real trade-off between alternatives. Most decisions don't qualify.
+
+---
+
+## The Grilling Skills: Which to Use
+
+This is the most important decision in the whole skill library.
+
+| Situation | Use |
+|-----------|-----|
+| You have a codebase | `/grill-with-docs` |
+| You don't have a codebase | `/grill-me` |
+| Early in a new project | `/grill-with-docs` (to *establish* the shared language) |
+| Personal use, writing, non-engineering | `/grill-me` |
+
+**Why the distinction matters:** `/grill-me` interviews you effectively but doesn't capture the vocabulary you agree on anywhere. You'll re-explain the same terms next session. `/grill-with-docs` reads your existing `CONTEXT.md`, challenges you against it, and updates it inline as new terms are resolved.
+
+> From the creator: *"Someone used /grill-me to interview themselves about their mom while writing a eulogy. It surfaced amazing stories. /grill-me has incredible use cases outside of engineering."*
+
+---
+
+## The Core Loop
+
+The five-skill workflow that covers the full arc of an AI-assisted feature cycle.
+
+### Stage 0 — Establish shared language (do this once per project)
+
+**Skill: `/grill-with-docs`** (first-session mode)
+
+Even at project start, use `/grill-with-docs` rather than `/grill-me`. The first session creates your `CONTEXT.md`. Every subsequent session builds on it.
+
+**What happens:**
+1. Skill looks for `CONTEXT.md` at repo root (or `CONTEXT-MAP.md` for multi-context monorepos)
+2. Surfaces any terms in your prompt that are undefined or ambiguous
+3. Proposes precise canonical terms; challenges fuzzy language
+4. Updates `CONTEXT.md` inline as each term is resolved
+5. Offers ADRs when a decision is hard to reverse, surprising, and a real trade-off
+
+**The compound effect:** By session 4–5, the AI "magically aligns with the thoughts I had before the words came out of my brain" — because it has read 4 sessions of resolved vocabulary.
+
+---
 
 ### Stage 1 — Surface architectural friction
 
 **Skill: `/improve-codebase-architecture`**
 
-Use at the start of any significant feature work, or whenever the codebase starts feeling tangled. It dispatches an exploration agent to find *deepening opportunities* — places where shallow, scattered modules can be consolidated into a single well-tested interface.
+Use at the start of significant feature work, or when the codebase starts feeling tangled. Dispatches an exploration agent to find *deepening opportunities* — places where shallow, scattered modules can be consolidated into a single well-tested interface.
+
+**Key concept:** The skill reads your `CONTEXT.md` and uses your project's domain vocabulary in its output. This is intentional — it prevents the model from using generic terms like "service" or "component" instead of your actual entities.
 
 **What you get:** A ranked list of candidates with files, problem description, proposed solution, and benefits expressed in terms of *locality* (where change concentrates) and *leverage* (what callers get).
-
-**When to use it:** Before writing new features; after a period of rapid iteration; when tests are becoming brittle.
-
-**Key concept:** The skill uses your project's domain vocabulary (from `CONTEXT.md` if present). This is intentional — it prevents the model from using generic terms like "service" or "component" instead of your actual entities.
 
 ---
 
 ### Stage 2 — Stress-test the chosen change
 
-**Skill: `/grill-me`**
+**Skill: `/grill-with-docs`** (or `/grill-me` if no codebase)
 
-Once you've picked a candidate from Stage 1, run `/grill-me` to walk the full design tree. Unlike tools that ask 3–5 top-level questions and then go implement, this skill keeps branching: each answer generates the next question, spiralling down until every decision node in the design tree is resolved.
+Once you've picked a candidate from Stage 1, grill the design. Unlike tools that ask 3–5 top-level questions then implement, this skill keeps branching: each answer generates the next question, spiralling down every branch until every decision node is resolved.
 
-**What you get:** A complete design where every hidden assumption has been made explicit — before any code is written.
-
-**When to use it:** After picking a deepening candidate; when you're about to make an architectural change; when a plan feels "mostly right" but you want to stress-test it.
-
-**The tree analogy (from the video):**
+**The tree analogy:**
 ```
-Most tools:        grill-me:
+Most tools:        grill-with-docs:
 Q1                 Q1
 Q2                 Q1a → Q1a-i → Q1a-i-α
 Q3                 Q1b → Q1b-i
@@ -44,35 +121,37 @@ Q4                 Q2 → Q2a → Q2a-i
 Q5                 ...every branch resolved
 ```
 
+**What else it does during the session:**
+- Challenges every term against the existing `CONTEXT.md` glossary ("your glossary defines 'cancellation' as X, but you seem to mean Y")
+- Cross-references claims against the actual code ("your code cancels entire Orders, but you just said partial cancellation is possible — which is right?")
+- Updates `CONTEXT.md` immediately when a term is resolved (not batched)
+- Offers to create an ADR when a decision meets the three criteria
+
 ---
 
 ### Stage 3 — Reduce token cost
 
 **Skill: `/caveman`**
 
-Activate after Stage 2 when you're going into a long implementation session. Drops ~30–75% of tokens by removing articles, filler, and pleasantries while preserving exact technical language.
+Activate at the start of a long design or implementation session. Drops ~35–75% of tokens by removing articles, filler, and pleasantries — preserving exact technical language and code blocks unchanged.
 
-**What you get:** Terse, accurate responses. Code blocks and error messages are unchanged.
+**Token reality check (from video):** Same prompt — 768 tokens without caveman, 502 with (~35% cut). In a compounding long session this is significant. Also reduces tokens in the model's *thinking traces*, which you don't see but pay for.
 
-**Auto-exits for:** Security warnings, irreversible actions, multi-step sequences where brevity risks misreading, or when you ask it to explain something fully.
+**Auto-exits for:** Security warnings, irreversible actions, multi-step sequences where brevity risks misreading.
 
 **Turn off with:** "stop caveman" or "normal mode".
 
-**Token reality check (from video):** Same prompt, same question — 768 tokens without caveman, 502 with. That's a ~35% cut. In a long session with compounding context, this compounds significantly.
-
 ---
 
-### Stage 4 — Understand unfamiliar code
+### Stage 4 — Verify a premise before acting on it
 
 **Skill: `/zoom-out`**
 
-Use whenever a proposed change references code you don't recognise, or when you're not sure whether an issue the architecture skill surfaced is actually real. It maps all relevant modules, their callers, and what they read/write — grounded in your project's domain vocabulary.
+Use whenever a proposed change references code you don't recognise, or when you're not sure whether an issue the architecture skill flagged is actually real.
 
-**What you get:** A mental-model map of the area, not a code dump. Explains *where a claim sits* in the context of the full system.
+**What you get:** A mental-model map — all relevant modules, callers, what's read and written — grounded in your `CONTEXT.md` vocabulary.
 
-**Typical flow:** Architecture skill flags an issue → grill-me produces a design → zoom-out lets you verify the premise before accepting the design.
-
-**From the video:** Zoom-out revealed that the "duplicated threshold logic" flagged in Stage 1 was actually two different things (apply threshold vs log prior value) — the initial premise was wrong. Saved a refactor that wasn't needed.
+**From the video:** Zoom-out revealed that a "duplicated threshold logic" was actually two different things (apply threshold vs log prior value). The initial premise was wrong. A refactor was avoided entirely.
 
 ---
 
@@ -80,41 +159,23 @@ Use whenever a proposed change references code you don't recognise, or when you'
 
 **Skill: `/handoff`**
 
-Use when you've reached a clear decision and want to either (a) start a fresh context window for implementation, or (b) hand off to a different tool (spec-driven dev, a separate planning session, etc.).
+Use when you've reached a clear decision and want to: (a) start a fresh context window for implementation, or (b) hand off to a spec-driven or implementation tool.
 
-**What you get:** A markdown file with everything relevant from the session — problem framing, solution chosen, key decisions, specific details resolved. References other artifacts (PRDs, diffs, ADRs) by path instead of duplicating them.
+**What you get:** A markdown file with everything relevant — problem framing, solution chosen, key decisions resolved, specific details. References other artifacts (PRDs, diffs, ADRs, `CONTEXT.md`) by path rather than duplicating them.
 
-**Two main use cases:**
-1. **Planning → implementation**: Distill the design conversation into a brief for the next session.
-2. **Context isolation**: Go down a tangent in a separate window without polluting the main session's context.
-
-**Usage:** `/handoff what the next session will focus on`
+**Usage:** `/handoff description of what the next session will focus on`
 
 ---
 
-## Extended Skills (learn next)
-
-These skills extend the core loop for specific situations.
-
-### Design grilling with live documentation
-
-**Skill: `/grill-with-docs`**
-
-Like `/grill-me` but domain-aware. Challenges your plan against `CONTEXT.md` (domain glossary) and `docs/adr/` (architecture decisions), updating both files inline as decisions crystallise. Use when the project already has a glossary or ADRs — the grilling happens *against that existing context*.
-
-**Pair with:** `/improve-codebase-architecture` (which references the same docs).
-
----
+## Extended Skills
 
 ### Debug a hard bug
 
 **Skill: `/diagnose`**
 
-Six-phase debugging discipline: build a feedback loop → reproduce → hypothesise (3–5 ranked) → instrument (one variable at a time) → fix + regression test → cleanup + post-mortem.
+Six-phase discipline: build a feedback loop → reproduce → hypothesise (3–5 ranked, falsifiable) → instrument (one variable at a time) → fix + regression test → cleanup + post-mortem.
 
-**The core idea:** "Build a feedback loop" is Phase 1 and the most important phase. Ten strategies for constructing a fast, deterministic pass/fail signal are listed in priority order, including a HITL bash template (`scripts/hitl-loop.template.sh`) for bugs that require human clicks.
-
-**Activates:** When user says "diagnose this", "debug this", reports a bug, or describes a performance regression.
+**The core phase is Phase 1.** Ten strategies for building a fast, deterministic pass/fail signal are listed in priority order. A HITL bash template (`scripts/hitl-loop.template.sh`) is included for bugs that require human interaction.
 
 ---
 
@@ -122,11 +183,11 @@ Six-phase debugging discipline: build a feedback loop → reproduce → hypothes
 
 **Skill: `/prototype`**
 
-Routes to one of two sub-skills depending on the question:
-- **Logic question** ("does this state machine work?") → interactive terminal TUI that lets you drive state by hand
-- **UI question** ("what should this look like?") → 3+ radically different variants on one route, switchable via `?variant=` URL param and a floating bottom bar
+Routes based on the question being answered:
+- **Logic question** ("does this state machine work?") → interactive terminal TUI, pure reducer/state-machine isolated from the UI shell
+- **UI question** ("what should this look like?") → 3+ structurally different variants on one route, switchable via `?variant=` param and a floating bottom bar
 
-Use before committing to an implementation. Delete after the question is answered.
+Delete after the question is answered. The logic module behind a logic prototype is worth keeping; the TUI shell is not.
 
 ---
 
@@ -134,30 +195,28 @@ Use before committing to an implementation. Delete after the question is answere
 
 **Skill: `/tdd`**
 
-Red-green-refactor with one critical anti-pattern called out explicitly: **no horizontal slicing** (writing all tests first, then all code). Forces vertical tracer bullets: one test → one implementation → repeat. Tests verify observable behavior through public interfaces only.
+Red-green-refactor with one critical anti-pattern called out explicitly: **no horizontal slicing** (all tests first, then all code). Forces vertical tracer bullets: one test → one implementation → repeat. Tests verify observable behavior through public interfaces only.
 
-**Pair with:** `/grill-me` (design the interface first) → `/tdd` (implement it test-first).
-
----
-
-### Break work into issues
-
-**Skill: `/to-issues`** and **`/to-prd`**
-
-- `/to-prd`: Synthesise the current conversation into a PRD and publish it to the issue tracker.
-- `/to-issues`: Break a PRD/plan into independently-grabbable vertical-slice issues, each with acceptance criteria and dependency ordering.
-
-**Natural workflow:** Grill-me session → `/to-prd` → `/to-issues` → individual issues for AFK agents.
+**Pair with:** `/grill-with-docs` (design the public interface) → `/tdd` (implement test-first).
 
 ---
 
-### Triage and issue management
+### Full feature lifecycle
+
+**Skills: `/to-prd` → `/to-issues`**
+
+- `/to-prd`: Synthesise the current conversation into a PRD (problem, user stories, implementation decisions, testing decisions, out of scope). Publishes to the issue tracker.
+- `/to-issues`: Break a PRD into vertical-slice issues — each a thin end-to-end path through all layers, independently demoable, with acceptance criteria and dependency ordering.
+
+**Natural workflow:** Grill session → `/to-prd` → `/to-issues` → individual issues ready for implementation.
+
+---
+
+### Issue management
 
 **Skill: `/triage`**
 
-State-machine for moving issues through: `needs-triage` → `needs-info` / `ready-for-agent` / `ready-for-human` / `wontfix`. Includes:
-- Agent-brief format for `ready-for-agent` issues (behavioral, not procedural; durable, not file-path-based)
-- `.out-of-scope/` knowledge base for tracking rejected features so they don't get re-suggested
+State-machine for moving issues through `needs-triage` → `needs-info` / `ready-for-agent` / `ready-for-human` / `wontfix`. Includes the agent-brief format (behavioral, not procedural; durable, no file paths) and `.out-of-scope/` knowledge base for tracking rejected features.
 
 ---
 
@@ -174,25 +233,27 @@ State-machine for moving issues through: `needs-triage` → `needs-info` / `read
 ## Recommended Learning Order
 
 ```
-Week 1 — Core loop on a real project
-  /improve-codebase-architecture  ← find one thing to fix
-  /grill-me                       ← design the fix
-  /zoom-out                       ← verify the premise
-  /handoff                        ← pass to implementation
+Week 1 — Foundation: shared language
+  Create CONTEXT.md with /grill-with-docs on your current project
+  (even if it's messy — the point is to start the vocabulary file)
+  Try /zoom-out on any unfamiliar area
+  End session with /handoff
 
-Week 2 — Reduce cost, extend reach
-  /caveman                        ← activate at session start
-  /grill-with-docs                ← add domain-awareness to grilling
-  /diagnose                       ← use on the next real bug
+Week 2 — Architecture + token efficiency
+  /improve-codebase-architecture  ← find one real candidate
+  /grill-with-docs                ← design the change, update CONTEXT.md
+  /caveman                        ← activate at the start of sessions
+  Compare: 3 sessions with CONTEXT.md vs 3 sessions without
 
 Week 3 — Full feature lifecycle
-  /to-prd                         ← synthesise decisions into a PRD
-  /to-issues                      ← break PRD into grabbable issues
+  /to-prd                         ← synthesise a grill session into a PRD
+  /to-issues                      ← break it into vertical-slice issues
   /tdd                            ← implement one issue test-first
-  /prototype                      ← spike the uncertain parts first
+  /prototype                      ← spike the uncertain design decision
 
-Week 4 — Ops and setup
-  /triage                         ← manage your issue backlog
+Week 4 — Debugging and ops
+  /diagnose                       ← apply to the next real bug
+  /triage                         ← work through your issue backlog
   /setup-pre-commit               ← harden a new project
   /git-guardrails-claude-code     ← protect against destructive ops
   /write-a-skill                  ← extend the library for your domain
@@ -203,34 +264,54 @@ Week 4 — Ops and setup
 ## Workflow Map
 
 ```
-New feature or refactor
+New project or new feature
         │
-        ▼
+        ▼ once per project (or first session)
+Create / update CONTEXT.md
+  via /grill-with-docs
+        │
+        ▼ start of significant feature work
 /improve-codebase-architecture
-  (find deepening opportunities)
+  (reads CONTEXT.md, finds deepening candidates)
         │
         ▼ pick one candidate
-/grill-me  (or /grill-with-docs if CONTEXT.md exists)
-  (resolve every design decision)
+/grill-with-docs
+  (reads CONTEXT.md + ADRs, resolves every branch,
+   updates CONTEXT.md inline, offers ADRs for hard decisions)
         │
-        ▼ use throughout
+        ▼ use throughout long sessions
 /caveman   ← activate to reduce token cost
-/zoom-out  ← use when premise needs verification
+/zoom-out  ← verify a premise before accepting it
         │
         ▼ decision reached
 /handoff → /to-prd → /to-issues
   (carry context forward, break into work)
         │
         ▼ implement
-/tdd  (one issue at a time, tracer bullets)
-/prototype  (spike uncertain parts)
+/tdd       (one issue at a time, tracer bullets)
+/prototype (spike uncertain design questions)
         │
         ▼ if a bug surfaces
 /diagnose  (build feedback loop first)
         │
         ▼ manage the queue
-/triage  (state-machine for issues)
+/triage    (state-machine for issues)
 ```
+
+---
+
+## The `grill-me` vs `grill-with-docs` Decision (summary)
+
+| | `/grill-me` | `/grill-with-docs` |
+|--|-------------|-------------------|
+| Has codebase | No | Yes |
+| Reads CONTEXT.md | No | Yes |
+| Updates CONTEXT.md | No | Yes (inline) |
+| Offers ADRs | No | Yes (sparingly) |
+| Cross-references code | No | Yes |
+| Best for | Personal use, writing, no-codebase brainstorming | Any engineering session |
+
+> `/grill-me` is not dead — it's excellent for non-engineering contexts. Writing a eulogy, planning a project from scratch, thinking through any complex decision without an existing codebase. It was moved to the "productivity" bucket precisely because it has more general use cases.
 
 ---
 
