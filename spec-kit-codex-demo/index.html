@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SpecFlow Control Room</title>
+    <link rel="stylesheet" href="src/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="rail" aria-label="Spec Kit workflow commands">
+        <div class="brand">
+          <span class="brand-mark">SK</span>
+          <div>
+            <strong>SpecFlow</strong>
+            <span>Control Room</span>
+          </div>
+        </div>
+        <nav id="phase-nav" class="phase-nav"></nav>
+        <button id="reset-demo" class="ghost-button" type="button">Reset Demo</button>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Specification-driven development demo</p>
+            <h1>Executable specs, visible gates, ordered implementation.</h1>
+          </div>
+          <div class="health-strip" aria-label="Project health">
+            <div>
+              <span id="coverage-score">0%</span>
+              <small>coverage</small>
+            </div>
+            <div>
+              <span id="risk-score">0</span>
+              <small>open risks</small>
+            </div>
+            <div>
+              <span id="done-score">0/0</span>
+              <small>tasks done</small>
+            </div>
+          </div>
+        </header>
+
+        <section class="stage-band">
+          <div class="stage-copy">
+            <p id="stage-command" class="command-pill"></p>
+            <h2 id="stage-title"></h2>
+            <p id="stage-description"></p>
+          </div>
+          <div class="stage-meter" aria-label="Workflow progress">
+            <div class="meter-ring">
+              <span id="stage-progress">0%</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <section class="artifact-panel" aria-labelledby="artifact-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Generated artifact</p>
+                <h2 id="artifact-title">Artifact</h2>
+              </div>
+              <button id="advance-phase" type="button">Advance Gate</button>
+            </div>
+            <pre id="artifact-body" class="artifact-body"></pre>
+          </section>
+
+          <section class="quality-panel" aria-labelledby="quality-title">
+            <div class="panel-heading compact">
+              <div>
+                <p class="eyebrow">Quality gates</p>
+                <h2 id="quality-title">Readiness</h2>
+              </div>
+            </div>
+            <div id="gate-list" class="gate-list"></div>
+          </section>
+
+          <section class="task-panel" aria-labelledby="task-title">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Implementation queue</p>
+                <h2 id="task-title">Tasks</h2>
+              </div>
+              <div class="segmented" role="group" aria-label="Task filter">
+                <button class="filter active" data-filter="all" type="button">All</button>
+                <button class="filter" data-filter="open" type="button">Open</button>
+                <button class="filter" data-filter="done" type="button">Done</button>
+              </div>
+            </div>
+            <div id="task-board" class="task-board"></div>
+          </section>
+
+          <section class="analysis-panel" aria-labelledby="analysis-title">
+            <div class="panel-heading compact">
+              <div>
+                <p class="eyebrow">Analyze output</p>
+                <h2 id="analysis-title">Findings</h2>
+              </div>
+            </div>
+            <div id="findings" class="findings"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="src/app.js"></script>
+  </body>
+</html>
