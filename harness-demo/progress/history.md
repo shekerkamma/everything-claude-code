@@ -65,3 +65,10 @@
 - **Changes:** entire `harness-demo/` directory created at the repo root.
 - **Verification:** `./init.sh` from `harness-demo/` ends green; 27 tests pass.
 - **Close:** demo ready. Feature 8 (cli_count) left `pending` so a user can run the full SDD flow themselves.
+
+## 2026-05-16 — Feature 8: cli_count
+- **Agent:** Claude Opus 4.7 (leader) → spec_author → implementer → reviewer.
+- **Plan:** execute the 6 tasks of `specs/cli_count/tasks.md`: add `cmd_count` and `count` subparser in `src/cli.py`, cover R1–R4 (single integer on stdout, `0` when empty, exit code 0, no file mutation) with tests, validate traceability and `./init.sh`.
+- **Changes:** `src/cli.py` (`cmd_count` + `count` subparser), `tests/test_cli.py` (2 new tests), `specs/cli_count/{requirements,design,tasks}.md`, `progress/impl_cli_count.md`, `progress/review_cli_count.md`.
+- **Verification:** `./init.sh` green, 29 tests pass. Reviewer APPROVED; traceability in `progress/impl_cli_count.md`.
+- **Close:** feature 8 marked `done`. Next: feature 9 (cli_export).

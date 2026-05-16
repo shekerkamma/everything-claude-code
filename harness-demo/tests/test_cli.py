@@ -225,6 +225,32 @@ class TestCli(unittest.TestCase):
         with open(self.path, "rb") as f:
             self.assertEqual(before_bytes, f.read())
 
+    def test_count_empty_prints_zero(self) -> None:
+        self.assertFalse(os.path.exists(self.path))
+        code, out, err = self._run(["count"])
+        self.assertEqual(code, 0)
+        self.assertEqual(out, "0\n")
+        self.assertEqual(err, "")
+        self.assertFalse(os.path.exists(self.path))
+
+    def test_count_with_several_notes(self) -> None:
+        self._run(["add", "one", "--body", "a"])
+        self._run(["add", "two", "--body", "b"])
+        self._run(["add", "three", "--body", "c"])
+        before = storage.load(self.path)
+        with open(self.path, "rb") as f:
+            before_bytes = f.read()
+        before_mtime = os.path.getmtime(self.path)
+        code, out, err = self._run(["count"])
+        self.assertEqual(code, 0)
+        self.assertEqual(out, "3\n")
+        self.assertEqual(err, "")
+        after = storage.load(self.path)
+        self.assertEqual(before, after)
+        with open(self.path, "rb") as f:
+            self.assertEqual(before_bytes, f.read())
+        self.assertEqual(before_mtime, os.path.getmtime(self.path))
+
 
 if __name__ == "__main__":
     unittest.main()

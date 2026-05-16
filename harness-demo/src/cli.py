@@ -68,6 +68,13 @@ def cmd_recent(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_count(args: argparse.Namespace) -> int:
+    notes = storage.load()
+    total = len(notes)
+    print(total)
+    return 0
+
+
 def cmd_edit(args: argparse.Namespace) -> int:
     if args.title is None and args.body is None:
         raise NoteError("you must pass --title and/or --body")
@@ -120,6 +127,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_recent = sub.add_parser("recent", help="List the N most recent notes.")
     p_recent.add_argument("--limit", type=int, default=5)
     p_recent.set_defaults(func=cmd_recent)
+
+    p_count = sub.add_parser("count", help="Print the total number of notes.")
+    p_count.set_defaults(func=cmd_count)
 
     return parser
 

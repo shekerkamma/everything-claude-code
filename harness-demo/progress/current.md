@@ -1,21 +1,19 @@
 # Current session
 
-> This file is emptied at the close of each session and moved to
-> `history.md`. While you work, **keep it updated in real time**, not
-> at the end.
+<!-- this file is emptied at session close -->
 
-- **Feature in progress:** _none_
-- **Started:** _—_
-- **Agent:** _—_
+- **Feature in progress:** none
+- **Started:** —
+- **Agent:** —
 
 ## Plan
 
-_—_
+—
 
 ## Log
 
-_—_
+—
 
 ## Next step
 
-_—_
+—
