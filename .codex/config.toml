@@ -60,7 +60,15 @@ startup_timeout_sec = 30
 
 [mcp_servers.playwright]
 command = "npx"
-args = ["-y", "@playwright/mcp@latest", "--headless", "--browser", "chromium"]
+args = [
+  "-y",
+  "@playwright/mcp@latest",
+  "--extension",
+  "--executable-path",
+  "/home/shekerk/.cache/ms-playwright/chromium-1217/chrome-linux64/chrome",
+  "--user-data-dir",
+  "/home/shekerk/.config/google-chrome",
+]
 startup_timeout_sec = 30
 
 [mcp_servers.sequential-thinking]
