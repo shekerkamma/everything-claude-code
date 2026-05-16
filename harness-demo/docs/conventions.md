@@ -1,0 +1,68 @@
+# Code conventions
+
+> Extreme homogeneity. The AI predicts better when the repo looks like
+> itself everywhere.
+
+## Python style
+
+- **Version:** Python 3.9+ (modern syntax like `list[str]` allowed).
+- **Format:** PEP 8. Maximum line length 100.
+- **Imports:** stdlib first, then local. One line per module.
+- **Strings:** double quotes `"..."` always. Single quotes only to
+  escape double quotes inside.
+- **f-strings** for interpolation. No `.format()`, no `%`.
+
+## Names
+
+| Type                    | Convention        | Example               |
+|-------------------------|-------------------|-----------------------|
+| Modules                 | `snake_case`      | `notes.py`            |
+| Classes                 | `PascalCase`      | `Note`                |
+| Functions / variables   | `snake_case`      | `load_notes`          |
+| Constants               | `UPPER_SNAKE`     | `DEFAULT_NOTES_PATH`  |
+| Private                 | prefix `_`        | `_atomic_write`       |
+
+## File structure
+
+Each file in `src/` starts with:
+
+```python
+"""One-line description of the module's purpose."""
+from __future__ import annotations
+
+# stdlib imports
+import json
+import os
+
+# local imports
+from src.notes import Note
+```
+
+## Tests
+
+- One test file per module: `tests/test_<module>.py`.
+- One `Test<Thing>(unittest.TestCase)` class per logical unit.
+- Each test uses a `tempfile.TemporaryDirectory()` and cleans up after
+  itself.
+- Descriptive test names: `test_load_returns_empty_when_file_missing`.
+
+## Error handling
+
+Domain exceptions in `src/notes.py`:
+
+```python
+class NoteError(Exception):
+    """Base for domain errors."""
+
+class NoteNotFound(NoteError):
+    """Raised when looking up a non-existent note."""
+```
+
+The CLI catches domain exceptions, prints the message to `stderr` and
+exits with code 1. Never propagates stack traces to the user.
+
+## Comments
+
+By default, **none**. Only allowed when they explain a non-obvious
+*why* (e.g. a documented workaround, a subtle invariant). Names should
+do the rest.
