@@ -72,7 +72,9 @@ Use the following skills when working on related files:
 When spawning subagents, always pass conventions from the respective skill into the agent's prompt.
 
 <!-- SPECKIT START -->
-Active spec-kit feature: `specs/001-todo-list/`. Plan:
-[plan.md](specs/001-todo-list/plan.md). Constitution:
-[constitution.md](.specify/memory/constitution.md).
+Active spec-kit feature: `specs/002-restaurant-app/`. Plan:
+[plan.md](specs/002-restaurant-app/plan.md). Constitution:
+[constitution.md](.specify/memory/constitution.md) (v2.0.0, project-wide
+with Static Frontend / Full-Stack profiles).
+Prior feature: `specs/001-todo-list/` (Static Frontend profile, shipped).
 <!-- SPECKIT END -->
